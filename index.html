@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fabric Image Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .left-panel {
+            max-width: 20vw;
+        }
+
+        .right-panel {
+            max-width: 20vw;
+        }
+
+        #canvas {
+            border: 1px solid black;
+            display: flex;
+            width: 60vw;
+        }
+
+        .row {
+            overflow: hidden;
+        }
+
+        .card {
+            height: 100%;
+        }
+
+        .scrollable-card {
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="row">
+                    <div class="col-xl-12 text-right">
+                        <button id="exportToImage" type="button" class="btn btn-primary m-1">
+                            <i class="fa fa-download" aria-hidden="true"></i> Exportar imagem</button>
+                        <!-- <button id="exportToSvg" type="button" class="btn btn-primary m-1">
+                            <i class="fa fa-download" aria-hidden="true"></i> Exportar SVG</button> -->
+                        <button id="saveLocalStorage" type="button" class="btn btn-primary m-1">
+                            <i class="fa fa-save" aria-hidden="true"></i> Salvar</button>
+                        <button id="cleanCanvas" type="button" class="btn btn-danger">
+                            <i class="fa fa-ban" aria-hidden="true"></i> Apagar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="card left-panel">
+                <div class="card-body scrollable-card">
+
+                    <div class="card">
+                        <div class="card-header">Texto</div>
+                        <div class="card-body">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <button id="addText" class="btn btn-primary">
+                                            Inserir texto
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+                    <div class="card">
+                        <div class="card-header">Add images</div>
+                        <div class="card-body max-height">
+                            <img class="images-item" id="addAssetImage1" src="./assets/pedreiro-1.jfif"
+                                style="width: 50px; height: 50px;">
+                            <img class="images-item" id="addAssetImage2" src="./assets/eletricista-1.jpg"
+                                style="width: 50px; height: 50px;">
+                            <img class="images-item" id="addPikachu" src="https://i.pinimg.com/originals/f9/f8/76/f9f876d2684bd05bae05c6fbfb399292.jpg"
+                                style="width: 50px; height: 50px;">
+                        </div>
+                    </div>
+                    <br />
+                    <div class="card">
+                        <div class="card-header">Upload image</div>
+                        <div class="card-body text-center">
+                            <input type="file" id="imageInput" class="form-control mb-3">
+                        </div>
+                    </div>
+                    <br />
+                    <div class="card">
+                        <div class="card-header">Figuras</div>
+                        <div class="card-body text-center max-height">
+                            <div class="btn-group btn-group-vertical" role="group">
+                                <button type="button" class="btn btn-primary" id="addRectangle">
+                                    Rectangle
+                                </button>
+                                <button type="button" class="btn btn-primary" id="addSquare">
+                                    Square
+                                </button>
+                                <button type="button" class="btn btn-primary" id="addTriangle">
+                                    Triangle
+                                </button>
+                                <button type="button" class="btn btn-primary" id="addCircle">
+                                    Circle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h5>Elementos</h5>
+                        <ul id="elementsList">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <canvas id="canvas"></canvas>
+            <div class="card right-panel">
+                <div class="card-body scrollable-card">
+                    <div id="textProperties" class="card" hidden>
+                        <div class="card-header">Propriedades de Texto</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="textInput">Texto</label>
+                                <input type="text" id="textInput" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="textColorInput">Cor</label>
+                                <input type="color" id="textColorInput" class="form-control">
+                            </div>
+                            <!-- Slider -->
+                            <div class="form-group">
+                                <label for="textSizeInput">Tamanho</label>
+                                <input type="range" id="textSizeInput" class="form-control" min="10" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="textFontInput">Fonte</label>
+                                <select id="textFontInput" class="form-control">
+                                    <option value="Arial">Arial</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Courier New">Courier New</option>
+                                    <option value="Verdana">Verdana</option>
+                                    <option value="Comic Sans MS">Comic Sans MS</option>
+                                    <option value="Sans Serif">sans-serif</option>
+                                    <option value="Monospace">monospace</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="textShape">Estilo</label>
+                                <select id="textShape" class="form-control">
+                                    <option value="normal">Normal</option>
+                                    <option value="bold">Bold</option>
+                                    <option value="italic">Italic</option>
+                                    <option value="bold italic">Bold Italic</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="imageProperties" class="card" hidden>
+                        <div class="card-header">Propriedades de Imagem</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="imageInput">Imagem</label>
+                                <input type="file" id="imageInput" class="form-control">
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let showTextProperties = false;
+        let showImageProperties = false;
+        //cria o canvas
+        const canvas = new fabric.Canvas('canvas');
+
+        resizeCanvas = () => {
+            if (window.innerWidth < 768) {
+                canvas.setWidth(window.innerWidth * 0.92);
+                canvas.setHeight(window.innerHeight * 0.2);
+            } else {
+                canvas.setWidth(256);
+                canvas.setHeight(256);
+            }
+        }   
+
+        resizeCanvas();
+
+        // Atualize o tamanho do canvas quando a janela for redimensionada
+        window.addEventListener('resize', resizeCanvas);
+
+        canvas.backgroundColor = 'transparent';
+
+        // Atualize a visibilidade do painel de propriedades para quando um objeto é clicado no canvas
+        canvas.on('selection:created', (e) => {
+            if (e.target.type === 'text') {
+                showTextProperties = true;
+                showImageProperties = false;
+                document.getElementById('textInput').value = e.target.text;
+            } else {
+                showTextProperties = false;
+                showImageProperties = true;
+            }
+            updatePropertiesPanelVisibility();
+        });
+
+        // Tipo quando um novo objeto entra no canvas
+        canvas.on('object:added', (e) => {
+            if (e.target.type === 'text') {
+                showTextProperties = true;
+                showImageProperties = false;
+                document.getElementById('textInput').value = e.target.text;
+            } else {
+                showTextProperties = false;
+                showImageProperties = true;
+            }
+            updatePropertiesPanelVisibility();
+        });
+
+        const elementsList = document.getElementById('elementsList');
+
+        document.getElementById('addPikachu').addEventListener('click', () => {
+            fabric.Image.fromURL('https://i.pinimg.com/originals/f9/f8/76/f9f876d2684bd05bae05c6fbfb399292.jpg', (img) => {
+                img.scale(0.2 / 2);
+                canvas.add(img);
+                const li = document.createElement('li');
+                li.textContent = 'Imagem:';
+                elementsList.appendChild(li);
+            });
+        });
+
+        // atualiza valor do texto no canvas
+        document.getElementById('textInput').addEventListener('input', (e) => {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'text') {
+                activeObject.text = e.target.value;
+                canvas.renderAll();
+            }
+        });
+
+        const resetTextPropertiesPanel = () => {
+            document.getElementById('textInput').value = '';
+            document.getElementById('textColorInput').value = '#000000';
+            document.getElementById('textSizeInput').value = 30;
+            document.getElementById('textFontInput').value = 'Arial';
+        }
+
+        document.getElementById('addText').addEventListener('click', () => {
+            // reseta os valores das propriedades de texto
+            resetTextPropertiesPanel();
+            showTextProperties = true;
+            showImageProperties = false;
+            updatePropertiesPanelVisibility();
+
+            const inputVal = document.getElementById('textInput').value;
+            const text = new fabric.Text(inputVal, {
+                left: 25,
+                top: 100,
+                fontFamily: 'Arial',
+                fontSize: 40
+            });
+
+            canvas.add(text);
+            // torna ativo o ultimo objeto inserido
+            canvas.setActiveObject(text);
+            const li = document.createElement('li');
+            li.textContent = 'Texto: ' + inputVal;
+            elementsList.appendChild(li);
+        });
+
+        document.getElementById('textColorInput').addEventListener('input', (e) => {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'text') {
+                activeObject.set('fill', e.target.value);
+                canvas.renderAll();
+            }
+        });
+
+        document.getElementById('textSizeInput').addEventListener('input', (e) => {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'text') {
+                activeObject.set('fontSize', e.target.value);
+                canvas.renderAll();
+            }
+        });
+
+        document.getElementById('textFontInput').addEventListener('input', (e) => {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'text') {
+                activeObject.set('fontFamily', e.target.value);
+                canvas.renderAll();
+            }
+        });
+
+        document.getElementById('textShape').addEventListener('input', (e) => {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'text') {
+                activeObject.set('fontStyle', e.target.value);
+                canvas.renderAll();
+            }
+        });
+
+        imageInput = document.getElementById('imageInput');
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const fabricImg = new fabric.Image(img);
+                    fabricImg.scale(0.2 / 2);
+                    canvas.add(fabricImg);
+                    const li = document.createElement('li');
+                    li.textContent = 'Imagem:';
+                    elementsList.appendChild(li);
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+
+        imageAssetElement1 = document.getElementById('addAssetImage1');
+        imageAssetElement1.addEventListener('click', () => {
+            showTextProperties = false;
+            showImageProperties = true;
+            updatePropertiesPanelVisibility();
+            fabric.Image.fromURL(imageAssetElement1.src, (img) => {
+                img.scale(0.2 / 2);
+                canvas.add(img);
+                const li = document.createElement('li');
+                li.textContent = 'Imagem:';
+                elementsList.appendChild(li);
+            });
+        });
+
+        imageAssetElement2 = document.getElementById('addAssetImage2');
+        imageAssetElement2.addEventListener('click', () => {
+            showTextProperties = false;
+            showImageProperties = true;
+            updatePropertiesPanelVisibility();
+            fabric.Image.fromURL(imageAssetElement2.src, (img) => {
+                img.scale(0.2 / 2);
+                canvas.add(img);
+                const li = document.createElement('li');
+                li.textContent = 'Imagem:';
+                elementsList.appendChild(li);
+            });
+        });
+
+        document.getElementById('addRectangle').addEventListener('click', () => {
+            showTextProperties = false;
+            showImageProperties = true;
+            updatePropertiesPanelVisibility();
+            const rect = new fabric.Rect({
+                left: 100,
+                top: 100,
+                fill: 'red',
+                width: 100,
+                height: 100
+            });
+            canvas.add(rect);
+            const li = document.createElement('li');
+            li.textContent = 'Retângulo';
+            elementsList.appendChild(li);
+        });
+
+        document.getElementById('addSquare').addEventListener('click', () => {
+            showTextProperties = false;
+            showImageProperties = true;
+            updatePropertiesPanelVisibility();
+            const square = new fabric.Rect({
+                left: 100,
+                top: 100,
+                fill: 'blue',
+                width: 100,
+                height: 100
+            });
+            canvas.add(square);
+            const li = document.createElement('li');
+            li.textContent = 'Quadrado';
+            elementsList.appendChild(li);
+        });
+
+        document.getElementById('addTriangle').addEventListener('click', () => {
+            showTextProperties = false;
+            showImageProperties = true;
+            updatePropertiesPanelVisibility();
+            const triangle = new fabric.Triangle({
+                left: 100,
+                top: 100,
+                fill: 'green',
+                width: 100,
+                height: 100
+            });
+            canvas.add(triangle);
+            const li = document.createElement('li');
+            li.textContent = 'Triângulo';
+            elementsList.appendChild(li);
+        });
+
+        document.getElementById('addCircle').addEventListener('click', () => {
+            showTextProperties = false;
+            showImageProperties = true;
+            updatePropertiesPanelVisibility();
+            const circle = new fabric.Circle({
+                left: 100,
+                top: 100,
+                fill: 'yellow',
+                radius: 50
+            });
+            canvas.add(circle);
+            const li = document.createElement('li');
+            li.textContent = 'Círculo';
+            elementsList.appendChild(li);
+        });
+
+        // se clicar com del em um objeto canvas selecionado deve apagar este objeto
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Delete') {
+                canvas.remove(canvas.getActiveObject());
+            }
+        });
+
+        document.getElementById('cleanCanvas').addEventListener('click', () => {
+            canvas.clear();
+            resizeCanvas();
+            canvas.backgroundColor = 'transparent';
+            elementsList.innerHTML = '';
+        });
+
+        function updatePropertiesPanelVisibility() {
+            const textProperties = document.getElementById('textProperties');
+            const imageProperties = document.getElementById('imageProperties');
+
+            textProperties.hidden = !showTextProperties;
+            imageProperties.hidden = !showImageProperties;
+        }
+
+        document.getElementById('exportToImage').addEventListener('click', () => {
+            const dataURL = canvas.toDataURL({
+                format: 'png',
+                quality: 0.8
+            });
+            const link = document.createElement('a');
+            link.href = dataURL;
+            random_value = Math.random().toString(36).substring(7);
+            link.download = `${random_value}.png`;
+            link.click();
+        });
+
+    </script>
+</body>
+
+</html>
