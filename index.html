@@ -49,6 +49,16 @@
                             <i class="fa fa-download" aria-hidden="true"></i> Exportar SVG</button> -->
                         <button id="saveLocalStorage" type="button" class="btn btn-primary m-1">
                             <i class="fa fa-save" aria-hidden="true"></i> Salvar</button>
+                            <div class="toast" id="saveToast" style="position: fixed; z-index: 999; bottom: 4%; right: 4%; opacity: 0; transition: opacity 0.5s ease-in-out;">
+                                <div class="toast-header">
+                                    <strong class="me-auto">%nome arquivo%</strong>
+                                    <small>%hora_cadastro%</small>
+                                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body">
+                                    Imagem salva com sucesso!
+                                </div>
+                            </div>
                         <button id="cleanCanvas" type="button" class="btn btn-danger">
                             <i class="fa fa-ban" aria-hidden="true"></i> Apagar</button>
                     </div>
@@ -176,6 +186,8 @@
             </div>
         </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let showTextProperties = false;
         let showImageProperties = false;
@@ -261,6 +273,9 @@
             updatePropertiesPanelVisibility();
 
             const inputVal = document.getElementById('textInput').value;
+
+            document.getElementById('textInput').focus();
+
             const text = new fabric.Text(inputVal, {
                 left: 25,
                 top: 100,
@@ -454,6 +469,16 @@
             random_value = Math.random().toString(36).substring(7);
             link.download = `${random_value}.png`;
             link.click();
+        });
+
+        document.getElementById('saveLocalStorage').addEventListener('click', function() {
+            var toastEl = document.getElementById('saveToast');
+            var toast = new bootstrap.Toast(toastEl);
+            toastEl.style.opacity = 1;
+            toast.show();
+            setTimeout(function() {
+                toastEl.style.opacity = 0;
+            }, 3000);
         });
 
     </script>
